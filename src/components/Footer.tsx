@@ -49,7 +49,7 @@ export function Footer() {
 								&copy; {new Date().getFullYear()} {siteMetadata.authorsCN}
 								&nbsp;网站已开源：
 								<PeekabooLink href="https://github.com/coderPerseus/blog">
-									luckySnail
+									ChenChu
 								</PeekabooLink>
 							</p>
 							<Links />

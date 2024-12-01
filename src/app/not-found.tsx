@@ -21,7 +21,7 @@ export default function NotFoundPage() {
 				>
 					<Image
 						src={NotFound}
-						alt="404 | luckySnail"
+						alt="404 | ChenChu"
 						unoptimized
 						width={320}
 						className="mb-12"

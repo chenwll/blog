@@ -3,14 +3,14 @@ title: 如何使用Next.js和GitHub Issues构建个人博客:从零到上线的�
 date: 2024-08-08T01:33:41Z
 slug: post-7
 author: chaseFunny：https://github.com/chaseFunny
-tags: ["blog","教程"]
+tags: ['blog', '教程']
 ---
 
 > 本文详细介绍了如何使用Next.js、GitHub Issues和Vercel从零开始构建并部署个人博客。包含技术栈选择、需求分析、开发过程和部署步骤等完整指南。
 
 大家好，我是幸运的蜗牛，今天来分享我最近从 0 到 1 开发的 个人blog，
 
-幸运的蜗牛的博客：https://www.luckysnail.cn/
+幸运的蜗牛的博客：https://www.ChenChu.cn/
 
 不知道大家是否有自己的 blog，或者想要做一个自己的 blog。我觉得有一个自己的 blog 还是很酷的事情，下面看我是如何从 0 到 1 实现个人 blog，先给大家看一下 blog 首页效果图
 
@@ -38,7 +38,7 @@ tags: ["blog","教程"]
 
 - [x] 搭建基础项目（commit：https://github.com/axin-s-Template/Nextjs-Boilerplate/commits/main/）
 
-  - [x] 代码规范：ESLint +  Prettier
+  - [x] 代码规范：ESLint + Prettier
   - [x] 提交规范：husky + lint-staged + @commitlint/cli + @commitlint/config-conventional
   - [x] 网站 SEO 元信息
   - [x] 主题切换
@@ -50,7 +50,7 @@ tags: ["blog","教程"]
 
 - [x] 项目页面开发
 
-- [x] 博客列表 +  博客详情。引入 contentlayer 渲染 MDX
+- [x] 博客列表 + 博客详情。引入 contentlayer 渲染 MDX
 
 - [x] 关于页面开发，也是一篇文章，使用 MDX 渲染
 
@@ -69,7 +69,7 @@ tags: ["blog","教程"]
 
 - [x] 支持 RSS ，Robots，sitemap.xml
 
-  >  以上代码 commit：https://github.com/coderPerseus/blog/commits/main/
+  > 以上代码 commit：https://github.com/coderPerseus/blog/commits/main/
 
 我们可以看一下网站在 chrome 的 LIghthouse 分数
 
@@ -111,12 +111,12 @@ tags: ["blog","教程"]
 
 ### fork 项目 + 修改
 
-1. 首先 fork 项目，然后去 `src/config/site.ts `  这里放着网站的所有元信息，修改对应的内容为自己的就好，
+1. 首先 fork 项目，然后去 `src/config/site.ts ` 这里放着网站的所有元信息，修改对应的内容为自己的就好，
 2. 然后去创建 .env 复制 .env.example 的代码，把对应的数据改为自己的。
-3. 全局搜索 luckysnail 不要限制大小写，替换为自己的名称
+3. 全局搜索 ChenChu 不要限制大小写，替换为自己的名称
 4. 去 `.github/workflows/sync-post.yml` 修改 user.name 和 user.email 为自己的
 5. 我把 github issues 的帖子放在了 `data/blog` ，但是我可能还有一些帖子不在 github issues ，我将其放在了 posts 下，你可以删除我的添加你自己的
-6. 去 package.json 修改一些包的信息为你自己的 
+6. 去 package.json 修改一些包的信息为你自己的
 7. 去 public 和 assests 把一些静态资源替换为你自己的
 
 做完这些，你就得到了一个你自己的 blog ，现在就可以 push 代码，然后登录 vercel 部署你的 blog 了，部署其实非常简单，但是最好在本地先部署并运行看一下，看看是否可以成功。vercel 部署可以参考：`https://juejin.cn/post/7143067114025254919` 。部署好了之后我们应该可以看到类似这样
@@ -148,4 +148,5 @@ vercel 会提供三个免费域名给我们，我们可以访问链接查看我�
 - https://starter.weijunext.com/
 
 ---
+
 此文自动发布于：<a href="https://github.com/coderPerseus/blog/issues/7" target="_blank">github issues</a>

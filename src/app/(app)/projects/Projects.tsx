@@ -1,16 +1,16 @@
 import codeCopyIcon from '@/assets/products/codecopy.png';
 import resumeIcon from '@/assets/products/resume.png';
 import React from 'react';
-import luckySnailBlogIcon from '~/public/logo.png';
+import ChenChuBlogIcon from '~/public/logo.png';
 import { ProjectCard } from './ProjectCard';
 
 export function Projects(): React.ReactElement {
 	const projects: ProjectItem[] = [
 		{
 			id: '1',
-			url: 'https://www.luckySnail.cn',
-			icon: luckySnailBlogIcon,
-			name: 'luckySnail 的个人博客',
+			url: 'https://www.ChenChu.cn',
+			icon: ChenChuBlogIcon,
+			name: 'ChenChu 的个人博客',
 			description: '基于 Next.js 创建的博客网站，',
 			tags: ['个人']
 		},

@@ -24,7 +24,7 @@ export default function robots(): MetadataRoute.Robots {
 				allow: '/'
 			}
 		],
-		sitemap: 'https://www.luckysnail.cn/sitemap.xml',
-		host: 'https://www.luckysnail.cn'
+		sitemap: 'https://www.ChenChu.cn/sitemap.xml',
+		host: 'https://www.ChenChu.cn'
 	};
 }
