@@ -59,7 +59,7 @@ jobs:
           git commit -m 'chore(ci): blog sync'
 
       - name: Pull latest changes from remote
-        run: git pull --rebase origin main
+        run: git pull --rebase origin master
 
       - name: Push changes to remote
         run: git push
