@@ -1,5 +1,5 @@
 {
-	"name": "lucky-snail-blog",
+	"name": "chenchu-blog",
 	"description": "基于 Next.js + tailwindcss + framer motion + contentlayer + github actions + github issues 的个人博客",
 	"keywords": [
 		"ChenChu",
