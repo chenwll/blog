@@ -55,7 +55,7 @@ export const API_HOST = getPageBaseUrl();
 
 **总结：**由于正则表达式不能正确理解 JavaScript 代码的复杂语法，可能会导致错误的匹配和替换。
 
-**<** style="color:rgb(0, 0, 0);">目标：\*\*在不改变原工作流的方式下，通过 Rust 调用 swc/core 进行 AST语法树分析替换变量，并编译成 wasm 供 js 调用
+\*\*目标：\*\*在不改变原工作流的方式下，通过 Rust 调用 swc/core 进行 AST语法树分析替换变量，并编译成 wasm 供 js 调用
 
 # Js 如何使用 Rust 工具函数
 
@@ -139,17 +139,17 @@ Serde 是一个用于高效、通用地对 Rust 数据结构
 _ser_
 ializing(_
 进行序列_
-化)和_de
-_serializing(_
-反_
+化)和*de
+\_serializing(*
+反\_
 序列化)的框架。该包提供了`
 Serialize`
 和`
 Deserialize`
- 两个`
+两个`
 trait`
 
-	。它本身不做转换的实际工作，实际工作是其它包实现的。我们可以结合serde，通过
+    。它本身不做转换的实际工作，实际工作是其它包实现的。我们可以结合serde，通过
 
 `serde_json`
 
@@ -162,10 +162,9 @@ MessagePack`
 
 #### Serde_json
 
-
-	serde_json 是 serde 的一个插件，它提供了对 JSON 格式的支持。你可以使用
-	serde_json 将 JSON 数据反序列化为 Rust 数据结构，或者将 Rust 数据结构序列化为
-	JSON 格式。
+    serde_json 是 serde 的一个插件，它提供了对 JSON 格式的支持。你可以使用
+    serde_json 将 JSON 数据反序列化为 Rust 数据结构，或者将 Rust 数据结构序列化为
+    JSON 格式。
 
 ```plain
 serde_json = {version = "1", features = ["preserve_order"]}
@@ -190,12 +189,11 @@ pub fn replace_json(source: &str, config: &str) -> String {
 }
 ```
 
-
-	如果想要让修改后JSON中的key顺序保持不变，那可以开启{' '}
+    如果想要让修改后JSON中的key顺序保持不变，那可以开启{' '}
 
 `preserve_order`
 
- 特性
+特性
 
 ```plain
 #[cfg(not(feature = "preserve_order"))]
