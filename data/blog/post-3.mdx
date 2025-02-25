@@ -1,0 +1,114 @@
+---
+title: 基础语法和数据类型
+date: 2025-01-07T15:58:50Z
+slug: post-3
+author: chenwll：https://github.com/chenwll
+tags: ["Rust"]
+---
+
+# 变量 & 可变性
+
+- 声明变量，默认是不可变的
+
+```Rust
+let some_number = 1;
+```
+
+- 声明可变变量
+
+```rust
+let mut another_number = 2;
+```
+
+
+
+# 常量
+
+声明常量：
+
+- 使用 const 声明
+- 不可以使用 mut
+- 必须要标注类型
+- 可在任意作用域内声明
+- 仅可以使用常量表达式赋值
+
+```rust
+const SPECIAL_NUMBER: i32 = 3;
+const NUM: i32 = 5;		// const NUM = 5i8	编译不通过
+const PI: f64 = 3.14;
+const LOVE: &str = "I love Rust!";
+```
+
+
+
+# 变量遮蔽
+
+- 可以用与之前变量名相同的名字声明一个新变量：第一个变量被第二个变量“遮蔽”了
+- 就是创建了一个新的变量，只不过名字相同
+- 常量没有遮蔽
+
+```rust
+let my_number = 1;
+let my_number = 2;
+```
+
+- 变量遮蔽可以改变变量类型，mut 不行
+
+```rust
+  let spaces = "   ";
+  let spaces = spaces.len();
+```
+
+
+
+```rust
+fn main() {
+    let x = 5;
+
+    let x = x + 1;
+
+    {
+        let x = x * 2;
+        println!("The value of x in the inner scope is: {x}"); //  12
+    }
+
+    println!("The value of x is: {x}"); // 6
+}
+```
+
+
+
+# 数据类型
+
+- 标量类型
+
+  - 整数
+
+    ![image-20250107235022635](https://chenblog-1310915146.cos.ap-beijing.myqcloud.com/20250107235022695.png)
+
+  - 浮点
+
+    ![image-20250107235151289](https://chenblog-1310915146.cos.ap-beijing.myqcloud.com/20250107235151888.png)
+
+  - 布尔
+
+  - 字符
+
+    ![image-20250107235244094](https://chenblog-1310915146.cos.ap-beijing.myqcloud.com/20250107235244693.png)
+
+- 复合类型
+
+  - 元祖
+
+    ![image-20250107235551698](https://chenblog-1310915146.cos.ap-beijing.myqcloud.com/20250107235552291.png)
+
+  - 数组
+
+    ![image-20250107235635005](https://chenblog-1310915146.cos.ap-beijing.myqcloud.com/20250107235635602.png)
+
+
+
+
+
+---
+此文自动发布于：<a href="https://github.com/chenwll/blog/issues/3" target="_blank">github issues</a>

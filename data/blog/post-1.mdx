@@ -7,6 +7,7 @@ tags: ["Rust"]
 ---
 
 # 背景
+
 在`wenzhen-mini-app`项目开始构建前，需要根据流水线中的构建参数对代码中的变量值进行统一替换
 
 1. 替换多路复用环境的值
@@ -16,7 +17,8 @@ tags: ["Rust"]
 ![](https://cdn.nlark.com/yuque/0/2024/png/26027016/1731813413827-ae1f85c6-476c-49a3-982b-fa0ab8606288.png)
 
 ## 现有方案：
-+ ts文件：使用正则表达式对 key - value 进行匹配，替换原本 value 值
+
+- ts文件：使用正则表达式对 key - value 进行匹配，替换原本 value 值
 
 正则表达式如下：[https://regexr-cn.com/2rrn9](https://regexr-cn.com/2rrn9)
 
@@ -24,21 +26,20 @@ tags: ["Rust"]
 const regex = new RegExp(`(${variableName}\\s*=\\s*)([^;]+)(;)`);
 ```
 
-+ json文件：json -> obj，通过 key 获取 value 进行替换
+- json文件：json -> obj，通过 key 获取 value 进行替换
 
-##  不足
-1. 当面对**<font style="color:#e61300;">复杂的变量结构</font>**时，难以直接通过正则表达式匹配到变量名和变量值进行替换。正则表达式如下：
+## 不足
+
+1. 当面对**复杂的变量结构**时，难以直接通过正则表达式匹配到变量名和变量值进行替换。正则表达式如下：
 
 ```plain
 const regex = new RegExp(`(${variableName}\\s*=\\s*)([^;]+)(;)`);
 ```
 
-+ 当变量连续声明时，中间使用`,`分隔而不是`;` 无法识别
-+ 当value中存在`;`正则分组匹配错误，导致替换失败
+- 当变量连续声明时，中间使用`,`分隔而不是`;` 无法识别
+- 当value中存在`;`正则分组匹配错误，导致替换失败
 
-
-
-2. 当面对**<font style="color:#e61300;">复杂的代码结构</font>**时，难以直接精确控制：
+2. 当面对**复杂的代码结构**时，难以直接精确控制：
 
 ```plain
 // 三元表达式
@@ -49,41 +50,44 @@ export const MALL_API_HOST = inH5 ? getPageBaseUrl() : 'https://jiankang.baidu.c
 export const API_HOST = getPageBaseUrl();
 ```
 
-+ `API_HOST`会根据不同的环境，选择不同的url，但是正则匹配 会将三元表达式直接替换成字符串，是不正确的 
-+ 不能精确控制 value 类型进行替换
+- `API_HOST`会根据不同的环境，选择不同的url，但是正则匹配 会将三元表达式直接替换成字符串，是不正确的
+- 不能精确控制 value 类型进行替换
 
-<font style="color:rgb(0, 0, 0);"></font>
+**总结：**由于正则表达式不能正确理解 JavaScript 代码的复杂语法，可能会导致错误的匹配和替换。
 
-**<font style="color:rgb(0, 0, 0);">总结：</font>**<font style="color:rgb(0, 0, 0);">由于正则表达式不能正确理解 JavaScript 代码的复杂语法，可能会导致错误的匹配和替换。</font>
+\*\*目标：\*\*在不改变原工作流的方式下，通过 Rust 调用 swc/core 进行 AST语法树分析替换变量，并编译成 wasm 供 js 调用
 
-**<font style="color:rgb(0, 0, 0);">目标：</font>**<font style="color:rgb(0, 0, 0);">在不改变原工作流的方式下，通过 Rust 调用 swc/core 进行 AST语法树分析替换变量，并编译成 wasm 供 js 调用</font>
+# Js 如何使用 Rust 工具函数
 
-
-
-# <font style="color:rgb(0, 0, 0);">Js 如何使用 Rust 工具函数</font>
 使用 WASM 的方式，基于[wasm-pack](https://link.juejin.cn/?target=https%3A%2F%2Frustwasm.github.io%2Fwasm-pack%2F)，将 Rust 代码编译成 WASM，以供 Node 调用
 
 ## WASM 定义
-> <font style="color:rgb(51, 51, 51);">WebAssembly（缩写为 wasm）是一种使用非 JavaScript 代码，并使其在浏览器中运行的方法。这些代码可以是 C、C++ 或 Rust 等。它们会被编译进你的浏览器，在你的 CPU 上以接近原生的速度运行。这些代码的形式是二进制文件，你可以直接在 JavaScript 中将它们当作模块来用。</font>
->
+
+>     WebAssembly（缩写为 wasm）是一种使用非 JavaScript
+>     代码，并使其在浏览器中运行的方法。这些代码可以是 C、C++ 或 Rust
+>     等。它们会被编译进你的浏览器，在你的 CPU
+>     上以接近原生的速度运行。这些代码的形式是二进制文件，你可以直接在 JavaScript
+>     中将它们当作模块来用。
 
 ![](https://cdn.nlark.com/yuque/0/2024/png/26027016/1731831122506-88d2ebe5-6677-414a-a8c5-725b04b33f70.png)
 
-<font style="color:rgb(37, 41, 51);">上图的左侧是用 C++实现的求递归的函数。中间是十六进制 的 Binary Code。右侧是指令文本。其实，中间的十六进制的 Binary Code 就是 WebAssembly。</font>
+    上图的左侧是用 C++实现的求递归的函数。中间是十六进制 的 Binary
+    Code。右侧是指令文本。其实，中间的十六进制的 Binary Code 就是 WebAssembly。
 
 总结：
 
-    1. WASM 是一种**编译目标**，<font style="color:rgb(37, 41, 51);">不是用来给各位用手</font>一行一行撸<font style="color:rgb(37, 41, 51);">的代码，</font><font style="color:rgb(51, 51, 51);"> C、C++ 或 Rust 等都可以编译 成 WASM</font>
-    2. <font style="color:rgb(27, 27, 27);">WASM 模块可以被导入的到一个 Web / Node 中，并且暴露出供 JavaScript 使用的 WebAssembly 函数。</font>
+    1. WASM 是一种**编译目标**，不是用来给各位用手一行一行撸的代码，C、C++ 或 Rust 等都可以编译 成 WASM
+    2. WASM 模块可以被导入的到一个 Web / Node 中，并且暴露出供 JavaScript 使用的 WebAssembly 函数。
 
 ## Rust 如何编译成 WASM
-[wasm-pack](https://github.com/rustwasm/wasm-pack) <font style="color:rgb(0, 0, 0);">是</font><font style="color:rgb(37, 41, 51);">一个构建、测试和发布 WASM 的 Rust CLI 工具，通过 </font>`<font style="color:rgb(255, 80, 44);">wasm-pack</font>`<font style="color:rgb(37, 41, 51);"> 相关的命令</font><font style="color:rgb(0, 0, 0);">可以管理构建过程，包括自动调用 </font>`<font style="color:rgb(0, 0, 0);">wasm-bindgen</font>`<font style="color:rgb(0, 0, 0);"> 来生成胶水代码。</font>
+
+[wasm-pack](https://github.com/rustwasm/wasm-pack) 是一个构建、测试和发布 WASM 的 Rust CLI 工具，通过 `wasm-pack` 相关的命令可以管理构建过程，包括自动调用 `wasm-bindgen` 来生成胶水代码。
 
 ```plain
 wasm-pack build --target nodejs
 ```
 
-`<font style="color:rgb(0, 0, 0);">wasm-pack</font>`<font style="color:rgb(0, 0, 0);"> 会在项目中创建一个 </font>`<font style="color:rgb(0, 0, 0);">pkg</font>`<font style="color:rgb(0, 0, 0);"> 目录，并包含以下内容</font>
+`wasm-pack` 会在项目中创建一个 `pkg` 目录，并包含以下内容
 
     - js 文件
     - wasm 文件
@@ -94,18 +98,20 @@ wasm-pack build --target nodejs
 ![](https://cdn.nlark.com/yuque/0/2024/png/26027016/1731831309578-02fa32af-dcd3-42b3-a468-a438f56ac912.png)
 
 ## JS 如何调用 WASM
+
 通过[wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) 将 Rust 打包成可发布的 npm 包，js 通过调用 npm package 来调用编译好的 wasm 模块
 
 ![](https://cdn.nlark.com/yuque/0/2024/png/26027016/1731831451672-b620282b-5e9d-4d78-a058-5c252c9ad58d.png)
 
-
-
 ## 数据交互
+
 主要从 JS 如何调用 Rust 函数、数据交互两方面介绍
 
 ### Rust如何暴露函数
+
 #### [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)
-[wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)<font style="color:rgb(0, 0, 0);">可以让</font>`WASM`<font style="color:rgb(0, 0, 0);">模块和</font>`Javascript`<font style="color:rgb(0, 0, 0);">模块进行更好的交互。通过使用宏（如 </font>`<font style="color:rgb(0, 0, 0);">#[wasm_bindgen]</font>`<font style="color:rgb(0, 0, 0);">）来注解Rust代码，这些宏会指导 </font>`<font style="color:rgb(0, 0, 0);">wasm-bindgen</font>`<font style="color:rgb(0, 0, 0);"> 工具生成必要的JS胶水代码（glue code），以便Rust函数可以作为JavaScript函数来调用，或允许Rust代码调用JavaScript函数。</font>
+
+[wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)可以让`WASM`模块和`Javascript`模块进行更好的交互。通过使用宏（如 `#[wasm_bindgen]`）来注解Rust代码，这些宏会指导 `wasm-bindgen` 工具生成必要的JS胶水代码（glue code），以便Rust函数可以作为JavaScript函数来调用，或允许Rust代码调用JavaScript函数。
 
 ```plain
 use wasm_bindgen::prelude::*;
@@ -124,20 +130,48 @@ pub fn greet(name: &str) {
 ```
 
 ### 数据交互
+
 js调用Rust函数进行函数传参时，我们需要通过json来处理，就需要用到`serde`和`serde_json`两个包
 
 #### [Serde](https://www.rectcircle.cn/posts/rust-serde/)
-<font style="color:#1c1d1f;">Serde 是一个用于高效、通用地对 Rust 数据结构</font>_<font style="color:#1c1d1f;">ser</font>_<font style="color:#1c1d1f;">ializing(</font>_<font style="color:#1c1d1f;">进行序列</font>_<font style="color:#1c1d1f;">化)和</font>_<font style="color:#1c1d1f;">de</font>_<font style="color:#1c1d1f;">serializing(</font>_<font style="color:#1c1d1f;">反</font>_<font style="color:#1c1d1f;">序列化)的框架。该包提供了</font>`<font style="color:#1c1d1f;">Serialize</font>`<font style="color:#1c1d1f;">和</font>`<font style="color:#1c1d1f;">Deserialize</font>`<font style="color:#1c1d1f;"> 两个</font>`<font style="color:#1c1d1f;">trait</font>`<font style="color:#1c1d1f;">。它本身不做转换的实际工作，实际工作是其它包实现的。我们可以结合serde，通过</font>`<font style="color:#1c1d1f;">serde_json</font>`<font style="color:#1c1d1f;">和</font>`<font style="color:#1c1d1f;">rmp-serde</font>`<font style="color:#1c1d1f;">将一种数据格式转换成</font>`<font style="color:#1c1d1f;">JSON</font>`<font style="color:#1c1d1f;">和</font>`<font style="color:#1c1d1f;">MessagePack</font>`<font style="color:#1c1d1f;">格式。</font>
 
-#### <font style="color:#0f6fd6;">Serde_json</font>
-<font style="color:rgb(25, 26, 36);">serde_json 是 serde 的一个插件，它提供了对 JSON 格式的支持。你可以使用 serde_json 将 JSON 数据反序列化为 Rust 数据结构，或者将 Rust 数据结构序列化为 JSON 格式。</font>
+Serde 是一个用于高效、通用地对 Rust 数据结构
+_ser_
+ializing(_
+进行序列_
+化)和*de
+\_serializing(*
+反\_
+序列化)的框架。该包提供了`
+Serialize`
+和`
+Deserialize`
+两个`
+trait`
+
+    。它本身不做转换的实际工作，实际工作是其它包实现的。我们可以结合serde，通过
+
+`serde_json`
+
+和`
+rmp-serde`
+将一种数据格式转换成`
+JSON`和`
+MessagePack`
+格式。
+
+#### Serde_json
+
+    serde_json 是 serde 的一个插件，它提供了对 JSON 格式的支持。你可以使用
+    serde_json 将 JSON 数据反序列化为 Rust 数据结构，或者将 Rust 数据结构序列化为
+    JSON 格式。
 
 ```plain
 serde_json = {version = "1", features = ["preserve_order"]}
 serde = "1"
 ```
 
-在 serde_json 中开启【preserve_order】这个 features，是因为 serde_json 在处理 json 数据时，<font style="color:rgb(37, 41, 51);">Map 默认使用的是 BtreeMap，它对插入顺序不保证</font>
+在 serde_json 中开启【preserve_order】这个 features，是因为 serde_json 在处理 json 数据时，Map 默认使用的是 BtreeMap，它对插入顺序不保证
 
 ```plain
 // source是一个读取后json文件的信息
@@ -155,7 +189,11 @@ pub fn replace_json(source: &str, config: &str) -> String {
 }
 ```
 
-<font style="color:rgb(37, 41, 51);">如果想要让修改后JSON中的key顺序保持不变，那可以开启 </font>`<font style="color:rgb(255, 80, 44);">preserve_order</font>`<font style="color:rgb(37, 41, 51);"> 特性</font>
+    如果想要让修改后JSON中的key顺序保持不变，那可以开启{' '}
+
+`preserve_order`
+
+特性
 
 ```plain
 #[cfg(not(feature = "preserve_order"))]
@@ -164,11 +202,8 @@ type MapImpl<K, V> = BTreeMap<K, V>;
 type MapImpl<K, V> = IndexMap<K, V>;
 ```
 
-
-
-
-
 # 具体实现：
+
 尝试搭建一个 Rust 项目，通过 serde_json 处理数据交互，swc/core 进行 AST 语法分析，wasm-pack 进行 Rust 项目的打包，具体步骤如下：
 
 a. 创建项目
@@ -196,8 +231,6 @@ swc 中核心库及作用如下：[swc_core - Rust](https://rustdoc.swc.rs/swc_c
 
 ![](https://cdn.nlark.com/yuque/0/2024/png/26027016/1731831881898-f5235504-00a9-4248-95c6-e4c329e84086.png)
 
-
-
 d. 因为 js 需要通过 json 传参给 wasm，在 Rust 中需要引入 serde,serde_json 来解析 json
 
 ```plain
@@ -211,7 +244,7 @@ e. 我们需要让 wasm 和 js 进行交互，需要引入[wasm-bindgen](https:/
 wasm-bindgen = "0.2.83"
 ```
 
-f. 将需要导出的函数添加`#[wasm_bindgen]`过程宏，<font style="color:rgb(0, 0, 0);">wasm-bindgen在编译时会生成对应的 glue code，从而在JS和webassembly之间调用函数</font>
+f. 将需要导出的函数添加`#[wasm_bindgen]`过程宏，wasm-bindgen在编译时会生成对应的 glue code，从而在JS和webassembly之间调用函数
 
 ```plain
 extern crate wasm_bindgen;
@@ -252,6 +285,10 @@ wasm-pack build --target nodejs
 const pkg = require('const-replace');
 const content = pkg.const_replace(source, config)
 ```
+
+---
+
+此文自动发布于：<a href="https://github.com/chenwll/blog/issues/1" target="_blank">github issues</a>
 
 
 ---
